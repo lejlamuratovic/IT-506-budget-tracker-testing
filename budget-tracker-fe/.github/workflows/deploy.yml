@@ -1,0 +1,60 @@
+name: Deploy Frontend to Render
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      # Step 3: Install Dependencies
+      - name: Install Dependencies
+        run: npm install
+
+      # Step 4: Build the Frontend
+      - name: Build Frontend
+        run: npm run build
+
+      # Step 5: Install Render CLI
+      - name: Install Render CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/render-oss/cli/refs/heads/main/bin/install.sh | sh
+
+      # Step 6: Set Render Workspace
+      - name: Set Render Workspace
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          render workspace set budget-tracker -o json
+
+      # Step 7: Get Commit SHA
+      - name: Get Commit SHA
+        id: git-info
+        run: echo "commit=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
+      # Step 8: Verify Render CLI Installation
+      - name: Verify Render CLI Installation
+        run: render --version
+
+      # Step 9: Deploy the Frontend to Render
+      - name: Deploy Frontend to Render
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          render deploys create ${{ secrets.RENDER_SERVICE_ID }} --commit ${{ env.commit }} -o json --confirm
