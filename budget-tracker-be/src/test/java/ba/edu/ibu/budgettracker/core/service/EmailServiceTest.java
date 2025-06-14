@@ -47,8 +47,8 @@ class EmailServiceTest {
         budget.setRemaining(200.0);
 
         List<CategoryChartDto> categoryData = List.of(
-                new CategoryChartDto("Groceries", 3L),
-                new CategoryChartDto("Transport", 2L)
+                new CategoryChartDto("Groceries", 300.0, 3L, List.of()),
+                new CategoryChartDto("Transport", 200.0, 2L, List.of())
         );
 
         when(budgetService.getBudgetByUserAndMonthAndYear(userId, month, year)).thenReturn(Optional.of(budget));

@@ -167,8 +167,8 @@ class ExpenseControllerTest {
     @Test
     void testGetCategoryChartData_Success() throws Exception {
         Long userId = 1L;
-        CategoryChartDto chartData1 = new CategoryChartDto("Groceries", 5L);
-        CategoryChartDto chartData2 = new CategoryChartDto("Rent", 2L);
+        CategoryChartDto chartData1 = new CategoryChartDto("Groceries", 500.0, 5L, List.of());
+        CategoryChartDto chartData2 = new CategoryChartDto("Rent", 200.0, 2L, List.of());
 
         when(expenseService.getCategoryChartData(eq(userId), any(), any()))
                 .thenReturn(Arrays.asList(chartData1, chartData2));
