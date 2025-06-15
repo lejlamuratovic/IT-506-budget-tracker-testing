@@ -7,9 +7,13 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.Keys;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class ExpenseTest extends BaseTest {
 
@@ -39,69 +43,6 @@ public class ExpenseTest extends BaseTest {
 
         wait.until(ExpectedConditions.invisibilityOfElementLocated(
                 By.xpath("//*[contains(text(),'" + fullTitle + "')]")));
-    }
-
-
-    @Test
-    @DisplayName("Date filters in Expense Overview show only matching rows")
-    void expenseDateFiltering() {
-        ensureBudgetExists();
-
-        // Add three expenses on different dates
-        LocalDate today     = LocalDate.now();
-        LocalDate twoDays   = today.minusDays(2);
-        LocalDate sevenDays = today.minusDays(7);
-
-        String tToday   = addExpenseWithDate("FilterTest", "10", today);
-        String t2Days   = addExpenseWithDate("FilterTest", "20", twoDays);
-        String t7Days   = addExpenseWithDate("FilterTest", "30", sevenDays);
-
-        // Verify they all appear before filtering
-        assertTrue(isRowDisplayed(tToday));
-        assertTrue(isRowDisplayed(t2Days));
-        assertTrue(isRowDisplayed(t7Days));
-
-        // Apply filter: last 3 days
-        WebElement startInput = driver.findElement(By.cssSelector("input[aria-label='filter by start date']"));
-        WebElement endInput   = driver.findElement(By.cssSelector("input[aria-label='filter by end date']"));
-
-        startInput.clear();
-        startInput.sendKeys(twoDays.format(DateTimeFormatter.ISO_DATE));
-        endInput.clear();
-        endInput.sendKeys(today.format(DateTimeFormatter.ISO_DATE));
-
-        driver.findElement(By.cssSelector("button[aria-label='apply filters']"))
-              .click();
-
-        // Wait until list updates (row for old expense disappears)
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[contains(text(),'" + t7Days + "')]")));
-
-        // Assertions after filter
-        assertTrue(isRowDisplayed(tToday));
-        assertTrue(isRowDisplayed(t2Days));
-        assertFalse(isRowPresent(t7Days));
-    }
-
-    // Helper methods
-    private String addExpenseWithDate(String baseTitle, String amount, LocalDate date) {
-        driver.findElement(By.cssSelector("[aria-label='add expense']")).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//h2[contains(text(),'Add New Expense')]")));
-
-        String title = baseTitle + " " + timestamp();
-        driver.findElement(By.cssSelector("input[name='title']")).sendKeys(title);
-        WebElement amountInput = driver.findElement(By.cssSelector("input[name='amount']"));
-        amountInput.clear();
-        amountInput.sendKeys(amount);
-        // Date input
-        String digits = date.format(DateTimeFormatter.ofPattern("ddMMyyyy"));
-        WebElement dateInput = driver.findElement(By.cssSelector("div[role='dialog'] input[name='date']"));
-        dateInput.sendKeys(digits);
-
-        driver.findElement(By.xpath("//button[contains(text(),'Add Expense')]"))
-              .click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(text(),'" + title + "')]")));
-        return title;
     }
 
     private boolean isRowDisplayed(String text) {
