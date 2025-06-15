@@ -137,10 +137,4 @@ Stop the processes with `Ctrl+C` when you are done.
 | Selenium tests fail instantly | Verify the backend & frontend are up and running and that your browser is supported. |
 
 ---
-## 8. CI / Sonar (optional)
-
-* FE Sonar config is in `budget-tracker-fe/sonar-project.properties`.
-* Backend coverage XML (`jacoco.xml`) & frontend `coverage/lcov.info` can be published to SonarQube or Coveralls.
-
----
 ### Happy hacking! 🎉
