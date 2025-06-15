@@ -89,52 +89,29 @@ npm test -- --coverage      # Jest + React Testing Library
 ---
 ## 5. End-to-End Selenium tests – `budget-tracker-automation`
 
-These black-box tests spin up a browser, interact with the deployed **frontend** and hit the **backend** behind the scenes.
+The Selenium tests are **black-box**: they drive a real browser and interact with the application just like a user would.
 
-### 5.1 Before you run them
+### 5.1 Which environment do they hit?
 
-1. **Start** the backend (`localhost:8080`) and frontend (`localhost:5173`) *in two separate terminals* as shown above.
-2. Ensure the site is reachable in your browser.
+* **Default:** The constant `APP_URL` in `BaseTest.java` points to the public demo front-end at
+  `https://budget-tracker-fe-lh5k.onrender.com/`.  This means you can simply clone the repo and run the tests without
+  launching anything locally.
+* **Local development (optional):** When you are working on new features and want to test them _before_ they are deployed,
+  start the backend & frontend locally (sections 3 & 4) and update the `APP_URL` constant (or parameterise it) to
+  `http://localhost:5173`.
 
-> The tests assume the default local ports.  If you run on different ports, you can pass JVM system properties: `-Dfrontend.url=http://localhost:3000 -Dbackend.url=http://localhost:9000` (adapt your own custom code accordingly).
+> In other words: **you don't have to run the servers for the tests to work**, but doing so gives you faster feedback on
+> your in-progress changes.
 
 ### 5.2 Execute the test suite
 
 ```bash
 cd budget-tracker-automation
-./mvnw test        # downloads drivers via WebDriverManager & runs in headless mode
+./mvnw test      # downloads drivers via WebDriverManager & runs in headless mode
 ```
 
-* Results appear in the console.
-* Screenshots/videos can be added via Selenium listeners if desired.
+* Results are printed to the console.
+* Screenshots/videos can be enabled via Selenium listeners if desired.
 
-> ❓ **Headed mode**: Temporarily comment-out the `--headless=new` argument in the test setup to watch the browser.
-
----
-## 6. All-in-one quickstart (macOS/Linux)
-
-```bash
-# from repo root
-# 1) Backend
-(cd budget-tracker-be && ./mvnw spring-boot:run) &
-# 2) Frontend
-(cd budget-tracker-fe && npm install && npm run dev) &
-# give servers a few seconds to start … then
-# 3) Selenium tests
-(cd budget-tracker-automation && ./mvnw test)
-```
-
-Stop the processes with `Ctrl+C` when you are done.
-
----
-## 7. Troubleshooting
-
-| Problem | Fix |
-|---------|------|
-| `port 8080 already in use` | Stop the existing service or edit `server.port` in `application.properties`. |
-| JaCoCo report missing | Make sure `./mvnw clean verify` ran **after** the plugin was configured (see `pom.xml`). |
-| Jest cannot find tests | Ensure test files end with `.test.ts(x)` or `.spec.ts(x)` and reside in a `__tests__` folder. |
-| Selenium tests fail instantly | Verify the backend & frontend are up and running and that your browser is supported. |
-
----
-### Happy hacking! 🎉
+> ❓ **Headed mode:** Temporarily comment-out the `--headless=new` argument in the test setup to watch the browser interact
+> with the app.
